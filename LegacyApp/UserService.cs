@@ -15,14 +15,18 @@ namespace LegacyApp
             (user.HasCreditLimit, user.CreditLimit) = UserCreditService.DetermineCreditLimit(user.Client.Type,
                 user.LastName, user.DateOfBirth);
 
-            if (!UserCreditService.CheckUserLimitRequirements(user.HasCreditLimit, user.CreditLimit))
+            if (_CheckUserBeforeAdding(user))
             {
-                return false;
+                UserDataAccess.AddUser(user);
+                return true;
             }
 
-            UserDataAccess.AddUser(user);
-            
-            return true;
+            return false;
+        }
+
+        private bool _CheckUserBeforeAdding(User user)
+        {
+            return UserCreditService.CheckUserLimitRequirements(user.HasCreditLimit, user.CreditLimit);
         }
     }
 }
